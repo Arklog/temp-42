@@ -1,0 +1,53 @@
+#include "include/algo.h"
+
+int	ft_solve(struct s_data *data, t_size_t pos)
+{
+	int	i;
+	int	nsolve;
+
+	if (!ft_check(data, pos))
+		return 0;
+	i = 1;
+	ft_set_pos(data, i, pos);
+	nsolve = ft_solve(data, pos + 1);
+	while (i < data->ncol + 1 && !nsolve)
+	{
+		++i;
+		ft_set_pos(data, i, pos);
+		nsolve = ft_solve(data, pos + 1);
+	}
+
+	return nsolve;
+}
+
+int	ft_check(struct s_data *data, t_size_t pos)
+{
+	return ft_check_row(data, pos) && ft_check_col(data, pos);
+}
+
+int	ft_check_row(struct s_data *data, t_size_t pos)
+{
+	int i;
+	int top;
+	int bottom;
+
+	top = ft_get_row_param(data, pos, 1);
+	bottom = ft_get_row_param(data, pos, 0);
+	i = 0;
+	while (i < top)
+	{
+		if (ft_get_value(data, pos % data->ncol, i)
+				>= ft_get_value(data, pos % data->ncol, i + 1))
+			return (0);
+		++i;
+	}
+	i = 0;
+	while (i < bottom)
+	{
+		if (ft_get_value(data, pos % data->ncol, data->ncol - i - 2)
+				>= ft_get_value(data, pos % data->ncol, data->ncol - i - 1))
+			return (0);
+		++i;
+	}
+	return (1);
+}

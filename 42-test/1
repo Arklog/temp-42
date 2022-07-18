@@ -1,0 +1,63 @@
+#include "gtest/gtest.h"
+#include <cstdio>
+#include <unistd.h>
+
+int	stdout_backup;
+int	pipefd[2];
+
+void	start_stdout_redirect() {
+	stdout_backup = dup(fileno(stdout));
+	pipe2(pipefd, 0);
+	dup2(pipefd[1], fileno(stdout));
+}
+
+void	end_stdout_redirect() {
+	write (fileno(stdout), 0, 1);
+	fflush(stdout);
+}
+
+#if __has_include("ex00/ft_strlen.c")
+namespace ex00 {
+#include "ex00/ft_strlen.c"
+	TEST(ex00, ft_strlen) {
+		EXPECT_EQ(0, ex00::ft_strlen((char*)""));
+		EXPECT_EQ(1, ex00::ft_strlen((char*)"a"));
+		EXPECT_EQ(10, ex00::ft_strlen((char*)"aaaaaaaaaa"));
+	}
+}
+#else
+TEST(ex00, ft_strlen) {
+	EXPECT_STREQ("ex00/ft_strlen.c", "");
+}
+#endif
+
+
+
+#if __has_include("ex01/ft_putstr.c")
+namespace ex01 {
+#include "ex01/ft_putstr.c"
+
+	TEST(ex01, ft_putstr) {
+		start_stdout_redirect();
+		ft_putstr((char*)"");
+		end_stdout_redirect();
+		EXPECT_STREQ("", buff);
+
+		start_stdout_redirect();
+		ft_putstr((char*)"abcde");
+		end_stdout_redirect();
+		EXPECT_STREQ("abcde", buff);
+	}
+}
+#else
+TEST(ex01, ft_putstr) {
+	EXPECT_STREQ("ex01/ft_putstr.c", "");
+}
+#endif
+
+
+int main()
+{
+	testing::InitGoogleTest();
+	return RUN_ALL_TESTS();
+}

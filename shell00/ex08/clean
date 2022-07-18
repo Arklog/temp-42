@@ -1,0 +1,1 @@
+find . -type f -name "*~" -print -exec rm {} \; -o -name "#*#" -print -exec rm {} \;
